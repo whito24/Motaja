@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MotoJá - Nampula</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#16a34a">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+
+    <!-- Cabeçalho -->
+    <header class="bg-green-600 text-white shadow-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl font-black tracking-wider bg-white text-green-600 px-2 py-0.5 rounded shadow">MotoJá</span>
+                <span class="text-xs bg-green-700 px-2 py-0.5 rounded-full font-medium">Nampula</span>
+            </div>
+            <div class="flex space-x-2">
+                <button onclick="switchTab('passenger')" id="btn-passenger" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-white text-green-700 shadow">Passageiro</button>
+                <button onclick="switchTab('driver')" id="btn-driver" class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-700 text-white hover:bg-green-500">Motorista</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col">
+
+        <!-- ABA PASSAGEIRO -->
+        <div id="tab-passenger" class="flex-1 flex flex-col space-y-4">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+                <h2 class="text-lg font-bold text-slate-800">Para onde vamos em Nampula?</h2>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">PARTIDA</label>
+                    <select id="pickup" class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium">
+                        <option value="Centro da Cidade">Centro da Cidade (Praça da Liberdade)</option>
+                        <option value="Mercado Central">Mercado Central / CFM</option>
+                        <option value="Muahivire">Muahivire</option>
+                        <option value="Namicopo">Namicopo</option>
+                        <option value="Muhala Expansão">Muhala Expansão</option>
+                        <option value="Napipine">Napipine</option>
+                        <option value="Carrupeia">Carrupeia</option>
+                        <option value="Marrere">Marrere</option>
+                        <option value="Natikiri">Natikiri (UniLúrio)</option>
+                        <option value="Aeroporto">Aeroporto Internacional de Nampula</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">DESTINO</label>
+                    <select id="dropoff" class="w-full p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm font-medium">
+                        <option value="Mercado Central">Mercado Central / CFM</option>
+                        <option value="Centro da Cidade" selected>Centro da Cidade (Praça da Liberdade)</option>
+                        <option value="Muahivire">Muahivire</option>
+                        <option value="Namicopo">Namicopo</option>
+                        <option value="Muhala Expansão">Muhala Expansão</option>
+                        <option value="Napipine">Napipine</option>
+                        <option value="Carrupeia">Carrupeia</option>
+                        <option value="Marrere">Marrere</option>
+                        <option value="Natikiri">Natikiri (UniLúrio)</option>
+                        <option value="Aeroporto">Aeroporto Internacional de Nampula</option>
+                    </select>
+                </div>
+
+                <!-- Categorias -->
+                <div class="grid grid-cols-3 gap-2 pt-2">
+                    <div onclick="selectCategory('Urbano', 50)" id="cat-Urbano" class="border-2 border-green-600 bg-green-50 p-3 rounded-xl text-center cursor-pointer">
+                        <div class="text-xl">🏍️</div>
+                        <div class="text-xs font-bold mt-1">Urbano</div>
+                        <div class="text-[10px] text-green-700 font-semibold">50 MT</div>
+                    </div>
+                    <div onclick="selectCategory('Universitário', 45)" id="cat-Universitário" class="border-2 border-slate-200 p-3 rounded-xl text-center cursor-pointer">
+                        <div class="text-🎓">🎓</div>
+                        <div class="text-xs font-bold mt-1">Estudante</div>
+                        <div class="text-[10px] text-slate-500 font-semibold">45 MT</div>
+                    </div>
+                    <div onclick="selectCategory('Express/Carga', 70)" id="cat-Express/Carga" class="border-2 border-slate-200 p-3 rounded-xl text-center cursor-pointer">
+                        <div class="text-xl">📦</div>
+                        <div class="text-xs font-bold mt-1">Carga</div>
+                        <div class="text-[10px] text-slate-500 font-semibold">70 MT</div>
+                    </div>
+                </div>
+
+                <button onclick="requestRide()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-lg transition duration-200">
+                    Pedir MotoJá Agora
+                </button>
+            </div>
+
+            <!-- Estado da Corrida (Passageiro) -->
+            <div id="passenger-status-card" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+                <div class="flex justify-between items-center">
+                    <span id="p-status-badge" class="bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full">A procurar piloto...</span>
+                    <span id="p-fare-display" class="font-bold text-green-600">50 MT</span>
+                </div>
+                <div id="driver-assigned-info" class="hidden border-t pt-3 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center font-bold text-green-700">AN</div>
+                        <div>
+                            <h4 class="font-bold text-sm">Armando Nampula</h4>
+                            <p class="text-xs text-slate-500">Honda Ace 125 • <span class="font-bold text-slate-700">AAJ-412-NP</span></p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-100 px-3 py-1.5 rounded-lg text-center">
+                        <span class="block text-[10px] text-slate-500">PIN DE SEGURANÇA</span>
+                        <span id="pin-display" class="text-lg font-black text-green-600 tracking-widest">4812</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA MOTORISTA -->
+        <div id="tab-driver" class="hidden flex-1 flex flex-col space-y-4">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-slate-800">Armando Nampula</h3>
+                    <p class="text-xs text-slate-500">Estado: <span id="driver-status-text" class="text-red-600 font-bold">Offline</span></p>
+                </div>
+                <button onclick="toggleDriverOnline()" id="btn-toggle-online" class="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow">
+                    Ficar Online
+                </button>
+            </div>
+
+            <div id="driver-offline-view" class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 text-center space-y-3">
+                <p class="text-slate-500 text-sm">Fique online para começar a receber pedidos de corridas em Nampula.</p>
+            </div>
+
+            <div id="driver-online-view" class="hidden space-y-4">
+                <div class="bg-green-50 border border-green-200 p-4 rounded-2xl text-center space-y-2">
+                    <div class="animate-pulse text-green-700 font-bold text-sm">À procura de passageiros em Nampula...</div>
+                    <button onclick="simulateIncomingRide()" class="bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold shadow">
+                        Simular Pedido de Passageiro Agora
+                    </button>
+                </div>
+
+                <!-- Alerta de Corrida Entrando -->
+                <div id="incoming-request-card" class="hidden bg-white border-2 border-green-500 p-4 rounded-2xl shadow-lg space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="bg-green-600 text-white text-xs font-bold px-2 py-0.5 rounded">Novo Pedido!</span>
+                        <span id="req-fare" class="font-bold text-green-600 text-lg">50 MT</span>
+                    </div>
+                    <div class="text-sm space-y-1">
+                        <p><strong>De:</strong> <span id="req-pickup">Centro da Cidade</span></p>
+                        <p><strong>Para:</strong> <span id="req-dropoff">Mercado Central</span></p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-2">
+                        <button onclick="rejectRide()" class="bg-red-100 text-red-700 py-2.5 rounded-xl font-bold text-sm">Recusar</button>
+                        <button onclick="acceptRide()" class="bg-green-600 text-white py-2.5 rounded-xl font-bold text-sm">Aceitar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="text-center py-3 text-xs text-slate-400 bg-white border-t">
+        MotoJá Nampula &copy; 2026 • Feito para Moçambique
+    </footer>
+
+    <script>
+        let currentCategory = 'Urbano';
+        let currentFare = 50;
+        let isDriverOnline = false;
+
+        function switchTab(tab) {
+            const pTab = document.getElementById('tab-passenger');
+            const dTab = document.getElementById('tab-driver');
+            const btnP = document.getElementById('btn-passenger');
+            const btnD = document.getElementById('btn-driver');
+
+            if (tab === 'passenger') {
+                pTab.classList.remove('hidden');
+                dTab.classList.add('hidden');
+                btnP.className = "px-3 py-1.5 rounded-lg text-sm font-semibold bg-white text-green-700 shadow";
+                btnD.className = "px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-700 text-white hover:bg-green-500";
+            } else {
+                pTab.classList.add('hidden');
+                dTab.classList.remove('hidden');
+                btnD.className = "px-3 py-1.5 rounded-lg text-sm font-semibold bg-white text-green-700 shadow";
+                btnP.className = "px-3 py-1.5 rounded-lg text-sm font-semibold bg-green-700 text-white hover:bg-green-500";
+            }
+        }
+
+        function selectCategory(cat, fare) {
+            currentCategory = cat;
+            currentFare = fare;
+            ['Urbano', 'Universitário', 'Express/Carga'].forEach(c => {
+                const el = document.getElementById('cat-' + c);
+                if (c === cat) {
+                    el.className = "border-2 border-green-600 bg-green-50 p-3 rounded-xl text-center cursor-pointer";
+                } else {
+                    el.className = "border-2 border-slate-200 p-3 rounded-xl text-center cursor-pointer";
+                }
+            });
+        }
+
+        function requestRide() {
+            const card = document.getElementById('passenger-status-card');
+            const badge = document.getElementById('p-status-badge');
+            const fareDisp = document.getElementById('p-fare-display');
+            const driverInfo = document.getElementById('driver-assigned-info');
+
+            card.classList.remove('hidden');
+            badge.innerText = "A procurar piloto em Nampula...";
+            badge.className = "bg-amber-100 text-amber-800 text-xs font-bold px-2.5 py-1 rounded-full";
+            fareDisp.innerText = currentFare + " MT";
+            driverInfo.classList.add('hidden');
+
+            setTimeout(() => {
+                badge.innerText = "Piloto Encontrado!";
+                badge.className = "bg-green-100 text-green-800 text-xs font-bold px-2.5 py-1 rounded-full";
+                driverInfo.classList.remove('hidden');
+            }, 3000);
+        }
+
+        function toggleDriverOnline() {
+            isDriverOnline = !isDriverOnline;
+            const statusText = document.getElementById('driver-status-text');
+            const btnToggle = document.getElementById('btn-toggle-online');
+            const offlineView = document.getElementById('driver-offline-view');
+            const onlineView = document.getElementById('driver-online-view');
+
+            if (isDriverOnline) {
+                statusText.innerText = "Online";
+                statusText.className = "text-green-600 font-bold";
+                btnToggle.innerText = "Ficar Offline";
+                btnToggle.className = "bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow";
+                offlineView.classList.add('hidden');
+                onlineView.classList.remove('hidden');
+            } else {
+                statusText.innerText = "Offline";
+                statusText.className = "text-red-600 font-bold";
+                btnToggle.innerText = "Ficar Online";
+                btnToggle.className = "bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow";
+                offlineView.classList.remove('hidden');
+                onlineView.classList.add('hidden');
+                document.getElementById('incoming-request-card').classList.add('hidden');
+            }
+        }
+
+        function simulateIncomingRide() {
+            const reqCard = document.getElementById('incoming-request-card');
+            const pickup = document.getElementById('pickup').value;
+            const dropoff = document.getElementById('dropoff').value;
+
+            document.getElementById('req-pickup').innerText = pickup;
+            document.getElementById('req-dropoff').innerText = dropoff;
+            document.getElementById('req-fare').innerText = currentFare + " MT";
+            reqCard.classList.remove('hidden');
+        }
+
+        function acceptRide() {
+            alert("Corrida aceite! Dirija-se ao local de recolha em Nampula.");
+            document.getElementById('incoming-request-card').classList.add('hidden');
+        }
+
+        function rejectRide() {
+            document.getElementById('incoming-request-card').classList.add('hidden');
+        }
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js');
+        }
+    </script>
+</body>
+</html>
